@@ -2,7 +2,7 @@ package com.heart.chat.domain.zsxq.service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.google.gson.Gson;
+import com.heart.chat.domain.ai.IGptChat;
 import com.heart.chat.domain.zsxq.IZsxqApi;
 import com.heart.chat.domain.zsxq.model.aggregates.UnCommentedCommentsAggregates;
 import com.heart.chat.domain.zsxq.model.req.AnswerReq;
@@ -19,15 +19,18 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.io.IOException;
-import java.util.ArrayList;
 
-@Component
+@Service
 public class ZsxqApi implements IZsxqApi {
 
     private Logger logger = LoggerFactory.getLogger(ZsxqApi.class);
+
+    @Resource
+    private IGptChat gptChat;
 
     @Override
     public UnCommentedCommentsAggregates queryUncommentedComments(String groupId, String cookie) throws IOException {

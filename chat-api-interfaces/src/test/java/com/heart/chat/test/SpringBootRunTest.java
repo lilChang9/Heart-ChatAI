@@ -1,6 +1,7 @@
 package com.heart.chat.test;
 
 import com.alibaba.fastjson.JSON;
+import com.heart.chat.domain.ai.IGptChat;
 import com.heart.chat.domain.zsxq.IZsxqApi;
 import com.heart.chat.domain.zsxq.model.aggregates.UnCommentedCommentsAggregates;
 import com.heart.chat.domain.zsxq.model.vo.Topics;
@@ -33,15 +34,25 @@ public class SpringBootRunTest {
     @Resource
     private IZsxqApi zsxqApi;
 
+    @Resource
+    private IGptChat gptChat;
+
     @Test
-    public void queryCommentTest() throws IOException {
+    public void queryCommentTest() throws Exception {
         UnCommentedCommentsAggregates unCommentedCommentsAggregates = zsxqApi.queryUncommentedComments(groupId, cookie);
         logger.info(JSON.toJSONString(unCommentedCommentsAggregates));
         for (Topics topic : unCommentedCommentsAggregates.getRespData().getTopics()) {
             // 获取评论内容
             String text = topic.getTalk().getText();
             logger.info("topicId:{},text:{}", topic.getTopic_id(), text);
-            zsxqApi.answerComment(groupId, cookie, topic.getTopic_id(), "测试回复", false);
+            String answer = gptChat.answer(text);
+            zsxqApi.answerComment(groupId, cookie, topic.getTopic_id(), answer, false);
         }
+    }
+
+    @Test
+    public void testChatgpt() throws Exception {
+        String str = gptChat.answer("hello");
+        System.out.println(str);
     }
 }

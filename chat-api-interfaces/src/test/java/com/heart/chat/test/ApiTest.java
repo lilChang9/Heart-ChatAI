@@ -11,10 +11,12 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.junit.jupiter.api.Test;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 public class ApiTest {
+
 
     @Test
     public void query_comment() throws IOException {
@@ -54,13 +56,35 @@ public class ApiTest {
         post.setEntity(entity);
 
         CloseableHttpResponse response = client.execute(post);
-        if(response.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
+        if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
             String res = EntityUtils.toString(response.getEntity());
             System.out.println(res);
-        }else{
+        } else {
             System.out.println(response.getStatusLine().getStatusCode());
         }
+    }
 
+    @Test
+    public void testChatgpt() throws IOException {
+        CloseableHttpClient client = HttpClientBuilder.create().build();
+        HttpPost post = new HttpPost("https://open.aiproxy.xyz/v1/chat/completions");
+        post.addHeader("Content-Type", "application/json");
+        post.addHeader("Authorization", "Bearer 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");
 
+        String jsonParam = "{\n" +
+                "     \"model\": \"text-similarity-davinci-001\",\n" +
+                "     \"messages\": [{\"role\": \"user\", \"content\": \"" + "帮我写一个归并排序" + "\"}],\n" +
+                "     \"temperature\": 0.7\n" +
+                "   }";
+        StringEntity entity = new StringEntity(jsonParam, ContentType.create("text/json").toString(), "UTF-8");
+        post.setEntity(entity);
+
+        CloseableHttpResponse response = client.execute(post);
+        if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+            String res = EntityUtils.toString(response.getEntity());
+            System.out.println(res);
+        } else {
+            System.out.println(response.getStatusLine().getStatusCode());
+        }
     }
 }
